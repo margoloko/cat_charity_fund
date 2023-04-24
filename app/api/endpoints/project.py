@@ -9,18 +9,19 @@ from app.api.validators import (check_investing,
                                 check_project_exists,
                                 check_update)
 from app.core.db import get_async_session
-#from app.core.user import current_superuser
+from app.core.user import current_superuser
 from app.crud.charity_project import project_crud
 from app.schemas.charity_project import (CharityProjectCreate,
                                          CharityProjectDB,
-                                         CharityProjectUpdate
-                                         )
+                                         CharityProjectUpdate, )
 
 router = APIRouter()
 
+
 @router.post('/',
              response_model=CharityProjectDB,
-             response_model_exclude_none=True, )
+             response_model_exclude_none=True,
+             dependencies=[Depends(current_superuser)])
 async def create_charity_project(project: CharityProjectCreate,
             session: AsyncSession = Depends(get_async_session)):
     """
@@ -29,11 +30,9 @@ async def create_charity_project(project: CharityProjectCreate,
     Создаёт благотворительный проект."""
     await check_name_duplicate(project.name, session)
     project = await project_crud.create(project, session)
-    invest = await investing(project, session)
-    if invest:
-        session.add_all([*invest, project])
-        await session.commit()
-        await session.refresh(project)
+    await investing(session)
+    await session.commit()
+    await session.refresh(project)
     return project
 
 
@@ -42,7 +41,7 @@ async def create_charity_project(project: CharityProjectCreate,
             response_model_exclude_none=True, )
 async def get_all_charity_projects(
         session: AsyncSession = Depends(get_async_session)
-        ) -> List[CharityProjectDB]:
+         ) -> List[CharityProjectDB]:
     """Возвращает список всех проектов."""
     all_projects = await project_crud.get_multi(session)
     return all_projects
@@ -50,8 +49,7 @@ async def get_all_charity_projects(
 
 @router.patch('/{project_id}',
               response_model=CharityProjectDB,
-              #dependencies=[Depends(current_superuser)]
-)
+              dependencies=[Depends(current_superuser)], )
 async def partially_update_project(
         project_id: int,
         obj_in: CharityProjectUpdate,
@@ -60,23 +58,29 @@ async def partially_update_project(
     Только для суперюзеров.
 
     Закрытый проект нельзя редактировать;
-    нельзя установить требуемую сумму меньше уже вложенной."""
-    project = await check_update(project_id,
-                                              obj_in,
-                                              session)
-    await check_name_duplicate(obj_in.name, session)
-    await project_crud.update(project, obj_in, session)
+    нельзя установить требуемую сумму меньше уже вложенной.
+    """
+    if obj_in.full_amount is not None:
+        project = await check_update(project_id,
+                                     session,
+                                     obj_in.full_amount)
+    else:
+        project = await check_update(project_id,
+                                    session)
+    if obj_in.name is not None:
+        await check_name_duplicate(obj_in.name, session)
+    project = await project_crud.update(project, obj_in, session)
     await investing(session)
     await session.refresh(project)
     return project
 
+
 @router.delete('/{project_id}',
                response_model=CharityProjectDB,
-               #dependencies=[Depends(current_superuser)],
-)
+               dependencies=[Depends(current_superuser)], )
 async def remove_charity_project(project_id: int,
                                  session: AsyncSession = Depends(get_async_session),
-                                ) -> CharityProjectDB:
+                                 ) -> CharityProjectDB:
     """
     Только для суперюзеров.
     Удаляет проект. Нельзя удалить проект, в который

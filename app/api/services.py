@@ -1,39 +1,34 @@
-from typing import List, Union
-from datetime import datetime as dt
+from datetime import datetime
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.charity_project import CharityProjectDB
-from app.schemas.donation import DonationDB
+from app.models import CharityProject, Donation
 
 
-async def investing(
-    new_object: Union[CharityProjectDB, DonationDB],
-    list_to_invest: List[Union[CharityProjectDB, DonationDB]],
-    session: AsyncSession,
-) -> Union[CharityProjectDB, DonationDB]:
-    for obj_to_invest in list_to_invest:
-        need_amount = obj_to_invest.full_amount - obj_to_invest.invested_amount
-        if new_object.full_amount > need_amount:
-            new_object.invested_amount = new_object.invested_amount + need_amount
-            obj_to_invest.invested_amount = obj_to_invest.full_amount
-        elif new_object.full_amount < need_amount:
-            obj_to_invest.invested_amount = obj_to_invest.invested_amount + new_object.full_amount
-            new_object.invested_amount = new_object.full_amount
-        elif new_object.full_amount == need_amount:
-            new_object.invested_amount = new_object.full_amount
-            obj_to_invest.invested_amount = obj_to_invest.full_amount
+async def investing(session: AsyncSession):
+    donat = 0
+    project = 0
+    money = await session.execute(
+        select(Donation).where(~Donation.fully_invested))
+    money = money.scalars().all()
 
-        if new_object.invested_amount == new_object.full_amount:
-            new_object.fully_invested = True
-            new_object.close_date = dt.now()
-        if obj_to_invest.invested_amount == obj_to_invest.full_amount:
-            obj_to_invest.fully_invested = True
-            obj_to_invest.close_date = dt.now()
-        session.add(obj_to_invest)
-        session.add(new_object)
-        if new_object.fully_invested:
-            break
+    prjcts = await session.execute(
+        select(CharityProject).where(~CharityProject.fully_invested))
+    prjcts = prjcts.scalars().all()
+    while donat < len(money) and project < len(prjcts):
+        balance = money[donat].full_amount - money[donat].invested_amount
+        pr_bl = prjcts[project].full_amount - prjcts[project].invested_amount
+        free_for_investing = min(balance, pr_bl)
+        money[donat].invested_amount += free_for_investing
+        prjcts[project].invested_amount += free_for_investing
+        if money[donat].full_amount == money[donat].invested_amount:
+            setattr(money[donat], 'fully_invested', True)
+            setattr(money[donat], 'close_date', datetime.now())
+            donat += 1
+        if prjcts[project].full_amount == prjcts[project].invested_amount:
+            setattr(prjcts[project], 'fully_invested', True)
+            setattr(prjcts[project], 'close_date', datetime.now())
+            project += 1
+    session.add_all(money + prjcts)
     await session.commit()
-    await session.refresh(new_object)
-    return new_object

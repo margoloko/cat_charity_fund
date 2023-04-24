@@ -12,7 +12,7 @@ class CRUDDonation(CRUDBase):
     async def get_by_user(self,
                           session: AsyncSession,
                           user: User
-                         ) -> List[Donation]:
+                          ) -> List[Donation]:
         donations = await session.execute(
             select(Donation).where(
                 Donation.user_id == user.id))
