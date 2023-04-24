@@ -20,3 +20,10 @@ class DonationDB(DonationBase):
 
     class Config:
         orm_mode = True
+
+
+class DonationGetAll(DonationDB):
+    user_id: int
+    invested_amount: int
+    fully_invested: bool
+    close_date: Optional[dt]
