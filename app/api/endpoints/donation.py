@@ -7,7 +7,7 @@ from app.api.services import investing
 from app.core.db import get_async_session
 from app.core.user import current_user, current_superuser
 from app.crud.donation import donation_crud
-from app.models import Donation, User
+from app.models import User
 from app.schemas.donation import (DonationCreate,
                                   DonationDB,
                                   DonationGetAll)
@@ -18,10 +18,9 @@ router = APIRouter()
 @router.post('/',
              response_model=DonationDB,
              response_model_exclude_none=True)
-async def create_donation(
-    donation: DonationCreate,
-    session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user), ):
+async def create_donation(donation: DonationCreate,
+                          session: AsyncSession = Depends(get_async_session),
+                          user: User = Depends(current_user), ):
     """Сделать пожертвование."""
     donation = await donation_crud.create(donation,
                                           session,
