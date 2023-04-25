@@ -21,13 +21,13 @@ http://127.0.0.1:8000/docs
 
 ## Использование
 
-#### 1. Клонируйте реппозиторий
+#### Клонируйте реппозиторий
 
 ```sh
 git clone https://github.com/margoloko/cat_charity_fund
 ```
 
-#### 2. Перейдите в папку cat_charity_fund, установите и запустите виртуальное окружение. Установите зависимости
+#### Перейдите в папку cat_charity_fund, установите и запустите виртуальное окружение.
 
 ```sh
 cd cat_charity_fund
@@ -48,12 +48,13 @@ python -m venv venv
     ```
     source venv/Scripts/activate
     ```
+#### Установите зависимости:
 
 ```sh
 pip install -r requirements.txt
 ```
 
-#### 3. Запустите приложение на локальном сервере
+#### Запустите приложение на локальном сервере
 
 ```sh
 uvicorn app.main:app --reload
