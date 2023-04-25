@@ -49,7 +49,7 @@ async def get_all_charity_projects(session: AsyncSession = Depends(get_async_ses
 @router.patch('/{project_id}',
               response_model=CharityProjectDB,
               dependencies=[Depends(current_superuser)], )
-async def partially_update_project(
+async def update_charity_project(
         project_id: int,
         obj_in: CharityProjectUpdate,
         session: AsyncSession = Depends(get_async_session)):
@@ -77,11 +77,12 @@ async def partially_update_project(
 @router.delete('/{project_id}',
                response_model=CharityProjectDB,
                dependencies=[Depends(current_superuser)], )
-async def remove_charity_project(project_id: int,
+async def delete_charity_project(project_id: int,
                                  session: AsyncSession = Depends(get_async_session),
                                  ) -> CharityProjectDB:
     """
     Только для суперюзеров.
+
     Удаляет проект. Нельзя удалить проект, в который
     уже были инвестированы средства, его можно только закрыть.
     """
