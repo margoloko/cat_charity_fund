@@ -20,5 +20,6 @@ router = APIRouter()
 @router.get('/',
             response_model=List[CharityProjectDB],
             dependencies=[Depends(current_superuser)], )
-async def get_report():
+async def get_report(session: AsyncSession = Depends(get_async_session),
+                     wrapper_services) Aiogoogle = Depends(get_service)
     pass
