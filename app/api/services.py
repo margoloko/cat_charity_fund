@@ -1,15 +1,8 @@
-import copy
 from datetime import datetime as dt
-from http import HTTPStatus
-from typing import Dict
 
-#from aiogoogle import Aiogoogle
-#from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
-from app.core.config import settings
 from app.models import CharityProject, Donation
 
 

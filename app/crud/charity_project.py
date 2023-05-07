@@ -29,5 +29,4 @@ class CRUDCharityProject(CRUDBase):
         return sorted(closed_projects, key=lambda time: time['close_time'])
 
 
-
 project_crud = CRUDCharityProject(CharityProject)

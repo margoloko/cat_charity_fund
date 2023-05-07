@@ -1,5 +1,4 @@
 from datetime import datetime as dt
-from typing import Dict
 
 from aiogoogle import Aiogoogle
 from app.core.config import settings
@@ -32,8 +31,8 @@ async def set_user_permissions(spreadsheetid: str,
     """Функция для предоставления прав доступа вашему личному аккаунту
     к созданному документу."""
     permissions_body = {'type': 'user',
-                                        'role': 'writer',
-                                        'emailAddress': settings.email}
+                        'role': 'writer',
+                        'emailAddress': settings.email}
     service = await wrapper_services.discover('drive', 'v3')
     await wrapper_services.as_service_account(
         service.permissions.create(fileId=spreadsheetid,
@@ -45,22 +44,22 @@ async def spreadsheets_update_value(spreadsheetid: str,
                                     projects: list,
                                     wrapper_services: Aiogoogle
                                     ) -> None:
-    """Функция для записи данных, полученных из базы, в гугл-таблицу."""
+    """Функция обновления данных в гугл-таблице."""
     now_date_time = dt.now().strftime(FORMAT)
     service = await wrapper_services.discover('sheets', 'v4')
     table_values = [
         ['Отчет от', now_date_time],
         ['Топ проектов по скорости закрытия'],
-        ['Название проекта', 'Время сбора', 'Описание'] ]
+        ['Название проекта', 'Время сбора', 'Описание']]
     for project in projects:
         new_row = [str(project['name']),
-                              str(project['close_time']),
-                              str(project['description'])]
+                   str(project['close_time']),
+                   str(project['description'])]
         table_values.append(new_row)
 
     update_body = {'majorDimension': 'ROWS',
-                                   'values': table_values}
-    response = await wrapper_services.as_service_account(
+                   'values': table_values}
+    await wrapper_services.as_service_account(
         service.spreadsheets.values.update(
             spreadsheetId=spreadsheetid,
             range='A1:E30',
