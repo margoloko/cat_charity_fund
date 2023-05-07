@@ -24,8 +24,8 @@ class CRUDCharityProject(CRUDBase):
         closed_projects = []
         for project in projects:
             closed_projects.append({'name': project.name,
-                                    'description': project.description,
-                                    'close_time': project.close_date - project.create_date,})
+                                    'close_time': project.close_date - project.create_date,
+                                    'description': project.description, })
         return sorted(closed_projects, key=lambda time: time['close_time'])
 
 
