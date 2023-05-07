@@ -3,8 +3,8 @@ from datetime import datetime as dt
 from http import HTTPStatus
 from typing import Dict
 
-from aiogoogle import Aiogoogle
-from fastapi import HTTPException
+#from aiogoogle import Aiogoogle
+#from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
