@@ -5,14 +5,8 @@ from app.core.config import settings
 
 
 FORMAT = "%Y/%m/%d %H:%M:%S"
-
-
-async def spreadsheets_create(wrapper_services: Aiogoogle) -> str:
-    """Функция создания документа с таблицами."""
-    now_date_time = dt.now().strftime(FORMAT)
-    service = await wrapper_services.discover('sheets', 'v4')
-    spreadsheet_body = {
-        'properties': {'title': f'Отчет от {now_date_time}',
+SHEETS_BODY = {
+        'properties': {'title': '',
                        'locale': 'ru_RU'},
         'sheets': [{'properties': {'sheetType': 'GRID',
                                    'sheetId': 0,
@@ -20,8 +14,13 @@ async def spreadsheets_create(wrapper_services: Aiogoogle) -> str:
                                    'gridProperties': {'rowCount': 100,
                                                       'columnCount': 5}}}]
     }
+
+async def spreadsheets_create(wrapper_services: Aiogoogle) -> str:
+    """Функция создания документа с таблицами."""
+    SHEETS_BODY['properties']['title'] = 'Отчет на {}'.format(dt.now().strftime(FORMAT))
+    service = await wrapper_services.discover('sheets', 'v4')
     response = await wrapper_services.as_service_account(
-        service.spreadsheets.create(json=spreadsheet_body))
+        service.spreadsheets.create(json=SHEETS_BODY))
     spreadsheetid = response['spreadsheetId']
     return spreadsheetid
 
@@ -62,6 +61,6 @@ async def spreadsheets_update_value(spreadsheetid: str,
     await wrapper_services.as_service_account(
         service.spreadsheets.values.update(
             spreadsheetId=spreadsheetid,
-            range='A1:E30',
+            range='A1:C30',
             valueInputOption='USER_ENTERED',
             json=update_body))
