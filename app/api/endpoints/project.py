@@ -4,15 +4,14 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.services import investing
-from app.api.validators import (check_investing,
-                                check_name_duplicate,
+from app.api.validators import (check_investing, check_name_duplicate,
                                 check_update)
 from app.core.db import get_async_session
 from app.core.user import current_superuser
 from app.crud.charity_project import project_crud
 from app.schemas.charity_project import (CharityProjectCreate,
                                          CharityProjectDB,
-                                         CharityProjectUpdate, )
+                                         CharityProjectUpdate)
 
 router = APIRouter()
 
