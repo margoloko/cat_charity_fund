@@ -15,14 +15,14 @@ SHEETS_BODY = {
                                                       'columnCount': 5}}}]
     }
 
+
 async def spreadsheets_create(wrapper_services: Aiogoogle) -> str:
     """Функция создания документа с таблицами."""
     SHEETS_BODY['properties']['title'] = 'Отчет на {}'.format(dt.now().strftime(FORMAT))
     service = await wrapper_services.discover('sheets', 'v4')
     response = await wrapper_services.as_service_account(
         service.spreadsheets.create(json=SHEETS_BODY))
-    spreadsheet_id = response['spreadsheetId']
-    return spreadsheet_id
+    return response['spreadsheetId']
 
 
 async def set_user_permissions(spreadsheet_id: str,
