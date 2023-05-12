@@ -41,8 +41,7 @@ async def create_charity_project(project: CharityProjectCreate,
 async def get_all_charity_projects(session: AsyncSession = Depends(get_async_session)
                                    ) -> List[CharityProjectDB]:
     """Возвращает список всех проектов."""
-    all_projects = await project_crud.get_multi(session)
-    return all_projects
+    return await project_crud.get_multi(session)
 
 
 @router.patch('/{project_id}',
