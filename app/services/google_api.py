@@ -12,8 +12,7 @@ SHEETS_BODY = {
                                    'sheetId': 0,
                                    'title': 'Лист1',
                                    'gridProperties': {'rowCount': 100,
-                                                      'columnCount': 5}}}]
-    }
+                                                      'columnCount': 5}}}]}
 
 
 async def spreadsheets_create(wrapper_services: Aiogoogle) -> str:
