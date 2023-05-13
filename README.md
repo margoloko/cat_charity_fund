@@ -1,5 +1,6 @@
 cat_charity_fund
-![example event parameter](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?event=push)
+
+![example workflow](https://github.com/margoloko/cat_charity_fund/actions/workflows/main.yml/badge.svg)
 
 # Сервис Благотворительного фонда поддержки котиков QRKot
 
