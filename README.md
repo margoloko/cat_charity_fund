@@ -1,4 +1,5 @@
 cat_charity_fund
+![example event parameter](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?event=push)
 
 # Сервис Благотворительного фонда поддержки котиков QRKot
 
